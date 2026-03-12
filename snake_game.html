@@ -999,3 +999,60 @@ function playSprint(){
 
 </script>
 
+
+<!-- SnakeZone Pro Relaxing Audio System -->
+
+<audio id="rainAmbience" src="audio/rain_loop.mp3" loop preload="auto"></audio>
+<audio id="forestAmbience" src="audio/forest_loop.mp3" loop preload="auto"></audio>
+
+<audio id="moveSound" src="audio/move_tick.mp3" preload="auto"></audio>
+<audio id="eatSound" src="audio/eat_pop.mp3" preload="auto"></audio>
+<audio id="sprintSound" src="audio/sprint_wind.mp3" preload="auto"></audio>
+
+<script>
+
+let ambienceStarted=false;
+
+function startAmbience(){
+ if(ambienceStarted) return;
+
+ const rain=document.getElementById("rainAmbience");
+ const forest=document.getElementById("forestAmbience");
+
+ rain.volume=0.15;
+ forest.volume=0.1;
+
+ rain.play().catch(()=>{});
+ forest.play().catch(()=>{});
+
+ ambienceStarted=true;
+}
+
+// auto start when game begins or player presses key
+window.addEventListener("keydown",startAmbience);
+window.addEventListener("touchstart",startAmbience);
+window.addEventListener("mousemove",startAmbience);
+
+function playMove(){
+ const s=document.getElementById("moveSound");
+ s.currentTime=0;
+ s.volume=0.07;
+ s.play().catch(()=>{});
+}
+
+function playEat(){
+ const s=document.getElementById("eatSound");
+ s.currentTime=0;
+ s.volume=0.25;
+ s.play().catch(()=>{});
+}
+
+function playSprint(){
+ const s=document.getElementById("sprintSound");
+ s.currentTime=0;
+ s.volume=0.15;
+ s.play().catch(()=>{});
+}
+
+</script>
+
