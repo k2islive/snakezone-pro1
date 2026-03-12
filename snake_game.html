@@ -1063,3 +1063,162 @@ requestAnimationFrame(gameLoop);
 
 <!-- ===== END PATCH ===== -->
 
+
+<!-- ===== SnakeZone Pro Mobile + Audio Patch ===== -->
+
+<style>
+canvas{
+max-width:100%;
+height:auto;
+touch-action:none;
+}
+
+#joyBase{
+position:fixed;
+bottom:90px;
+left:30px;
+width:120px;
+height:120px;
+border-radius:50%;
+background:rgba(255,255,255,0.08);
+z-index:9999;
+}
+
+#joyStick{
+width:60px;
+height:60px;
+background:#2ecc71;
+border-radius:50%;
+position:absolute;
+top:30px;
+left:30px;
+}
+
+@media (min-width:900px){
+#joyBase{display:none;}
+}
+</style>
+
+<div id="joyBase">
+<div id="joyStick"></div>
+</div>
+
+<script>
+
+/* WebAudio sound engine */
+
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+
+function tone(f,d,v=0.1){
+
+const o=audioCtx.createOscillator();
+const g=audioCtx.createGain();
+
+o.connect(g);
+g.connect(audioCtx.destination);
+
+o.frequency.value=f;
+g.gain.value=v;
+
+o.start();
+
+setTimeout(()=>o.stop(),d);
+
+}
+
+function soundMove(){tone(200,30,0.04);}
+function soundEat(){tone(520,120,0.08);}
+function soundBigEat(){tone(720,150,0.09);}
+function soundSprint(){tone(260,90,0.05);}
+function soundShrink(){tone(150,180,0.07);}
+
+/* vibration */
+
+function vibrate(ms=20){
+if(navigator.vibrate){
+navigator.vibrate(ms);
+}
+}
+
+/* joystick */
+
+let joy=document.getElementById("joyBase");
+
+let dragging=false;
+
+joy.addEventListener("touchstart",()=>dragging=true);
+
+document.addEventListener("touchend",()=>dragging=false);
+
+document.addEventListener("touchmove",e=>{
+
+if(!dragging)return;
+
+let r=joy.getBoundingClientRect();
+
+let x=e.touches[0].clientX-r.left;
+let y=e.touches[0].clientY-r.top;
+
+let cx=r.width/2;
+let cy=r.height/2;
+
+let dx=x-cx;
+let dy=y-cy;
+
+if(Math.abs(dx)>Math.abs(dy)){
+if(dx>0) direction={x:1,y:0};
+else direction={x:-1,y:0};
+}else{
+if(dy>0) direction={x:0,y:1};
+else direction={x:0,y:-1};
+}
+
+});
+
+/* swipe control */
+
+let sx=0,sy=0;
+
+document.addEventListener("touchstart",e=>{
+sx=e.changedTouches[0].screenX;
+sy=e.changedTouches[0].screenY;
+});
+
+document.addEventListener("touchend",e=>{
+
+let dx=e.changedTouches[0].screenX-sx;
+let dy=e.changedTouches[0].screenY-sy;
+
+if(Math.abs(dx)>Math.abs(dy)){
+if(dx>0) direction={x:1,y:0};
+else direction={x:-1,y:0};
+}else{
+if(dy>0) direction={x:0,y:1};
+else direction={x:0,y:-1};
+}
+
+});
+
+/* 120 FPS compatible loop */
+
+let lastTime=0;
+
+function gameLoop(time){
+
+const delta=time-lastTime;
+
+lastTime=time;
+
+if(typeof updateGame==="function"){
+updateGame(delta);
+}
+
+requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);
+
+</script>
+
+<!-- ===== END PATCH ===== -->
+
