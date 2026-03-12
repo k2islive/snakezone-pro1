@@ -1236,3 +1236,237 @@ else setDirection("up");
 
 </script>
 
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+canvas{
+max-width:100%;
+height:auto;
+touch-action:none;
+}
+
+#mobileControls{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+display:none;
+grid-template-columns:60px 60px 60px;
+gap:10px;
+z-index:999;
+}
+
+.controlBtn{
+width:60px;
+height:60px;
+font-size:24px;
+border:none;
+border-radius:12px;
+background:#2ecc71;
+color:white;
+}
+
+@media (max-width:900px){
+#mobileControls{display:grid;}
+}
+
+#joystickBase{
+position:fixed;
+bottom:100px;
+left:40px;
+width:120px;
+height:120px;
+background:rgba(255,255,255,0.08);
+border-radius:50%;
+display:none;
+z-index:1000;
+}
+
+#joystickStick{
+width:60px;
+height:60px;
+background:#2ecc71;
+border-radius:50%;
+position:absolute;
+top:30px;
+left:30px;
+}
+
+@media (max-width:900px){
+#joystickBase{display:block;}
+}
+
+#audioOverlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#0b0f12;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+color:white;
+z-index:9999;
+font-family:Arial;
+}
+
+#audioOverlay button{
+padding:16px 32px;
+font-size:18px;
+border:none;
+border-radius:8px;
+background:#2ecc71;
+color:white;
+}
+
+</style>
+
+<div id="mobileControls">
+<div></div>
+<button class="controlBtn" onclick="setDirection('up')">↑</button>
+<div></div>
+
+<button class="controlBtn" onclick="setDirection('left')">←</button>
+<button class="controlBtn" onclick="setDirection('down')">↓</button>
+<button class="controlBtn" onclick="setDirection('right')">→</button>
+</div>
+
+<div id="joystickBase">
+<div id="joystickStick"></div>
+</div>
+
+<div id="audioOverlay">
+<h2>SnakeZone Pro</h2>
+<p>Enable immersive sound</p>
+<button onclick="startAudio()">Start Game</button>
+</div>
+
+<audio id="rainAmbience" src="audio/rain_loop.mp3" loop></audio>
+<audio id="forestAmbience" src="audio/forest_ambience.mp3" loop></audio>
+
+<audio id="moveSound" src="audio/move_tick.mp3"></audio>
+<audio id="eatSound" src="audio/eat_pop.mp3"></audio>
+<audio id="sprintSound" src="audio/sprint_wind.mp3"></audio>
+
+<script>
+
+let direction={x:1,y:0};
+let audioStarted=false;
+
+function startAudio(){
+
+if(audioStarted) return;
+
+const rain=document.getElementById("rainAmbience");
+const forest=document.getElementById("forestAmbience");
+
+rain.volume=0.18;
+forest.volume=0.12;
+
+rain.play().catch(()=>{});
+forest.play().catch(()=>{});
+
+document.getElementById("audioOverlay").style.display="none";
+
+audioStarted=true;
+
+}
+
+function playMove(){
+const s=document.getElementById("moveSound");
+s.currentTime=0;
+s.volume=0.08;
+s.play().catch(()=>{});
+}
+
+function playEat(){
+const s=document.getElementById("eatSound");
+s.currentTime=0;
+s.volume=0.3;
+s.play().catch(()=>{});
+}
+
+function playSprint(){
+const s=document.getElementById("sprintSound");
+s.currentTime=0;
+s.volume=0.2;
+s.play().catch(()=>{});
+}
+
+function setDirection(dir){
+
+if(dir==="up") direction={x:0,y:-1};
+
+if(dir==="down") direction={x:0,y:1};
+
+if(dir==="left") direction={x:-1,y:0};
+
+if(dir==="right") direction={x:1,y:0};
+
+if(navigator.vibrate) navigator.vibrate(10);
+
+}
+
+let touchStartX=0;
+let touchStartY=0;
+
+document.addEventListener("touchstart",e=>{
+touchStartX=e.changedTouches[0].screenX;
+touchStartY=e.changedTouches[0].screenY;
+});
+
+document.addEventListener("touchend",e=>{
+
+let dx=e.changedTouches[0].screenX-touchStartX;
+let dy=e.changedTouches[0].screenY-touchStartY;
+
+if(Math.abs(dx)>Math.abs(dy)){
+if(dx>0)setDirection("right");
+else setDirection("left");
+}else{
+if(dy>0)setDirection("down");
+else setDirection("up");
+}
+
+});
+
+const joystick=document.getElementById("joystickBase");
+const stick=document.getElementById("joystickStick");
+
+let dragging=false;
+
+joystick.addEventListener("touchstart",()=>dragging=true);
+
+document.addEventListener("touchend",()=>dragging=false);
+
+document.addEventListener("touchmove",e=>{
+
+if(!dragging) return;
+
+let rect=joystick.getBoundingClientRect();
+
+let x=e.touches[0].clientX-rect.left;
+let y=e.touches[0].clientY-rect.top;
+
+let centerX=rect.width/2;
+let centerY=rect.height/2;
+
+let dx=x-centerX;
+let dy=y-centerY;
+
+if(Math.abs(dx)>Math.abs(dy)){
+if(dx>0)setDirection("right");
+else setDirection("left");
+}else{
+if(dy>0)setDirection("down");
+else setDirection("up");
+}
+
+});
+
+</script>
+
