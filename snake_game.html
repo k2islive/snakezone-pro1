@@ -904,3 +904,42 @@ setTimeout(()=>{ if(profile){ initGameState(); shrinkTriggered=[]; elasped=0; dr
 </script>
 </body>
 </html>
+
+<!-- SnakeZone Pro Audio System -->
+
+<audio id="bgRain" src="audio/rain_loop.mp3" loop preload="auto"></audio>
+<audio id="moveSound" src="audio/move_tick.mp3" preload="auto"></audio>
+<audio id="eatSound" src="audio/eat_pop.mp3" preload="auto"></audio>
+<audio id="sprintSound" src="audio/sprint_wind.mp3" preload="auto"></audio>
+
+<script>
+
+window.addEventListener("click", () => {
+  const rain = document.getElementById("bgRain");
+  rain.volume = 0.25;
+  rain.play().catch(()=>{});
+});
+
+function playMove(){
+  const s = document.getElementById("moveSound");
+  s.currentTime = 0;
+  s.volume = 0.1;
+  s.play().catch(()=>{});
+}
+
+function playEat(){
+  const s = document.getElementById("eatSound");
+  s.currentTime = 0;
+  s.volume = 0.3;
+  s.play().catch(()=>{});
+}
+
+function playSprint(){
+  const s = document.getElementById("sprintSound");
+  s.currentTime = 0;
+  s.volume = 0.2;
+  s.play().catch(()=>{});
+}
+
+</script>
+
