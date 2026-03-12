@@ -1,53 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 
-void main() {
+import 'firebase_options.dart';
+import 'core/theme.dart';
+import 'core/routes.dart';
+import 'services/auth_service.dart';
+import 'services/audio_service.dart';
+import 'services/firestore_service.dart';
+import 'services/local_storage_service.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  runApp(const SnakeGameWrapperApp());
-}
+  
+  await LocalStorageService.init();
 
-class SnakeGameWrapperApp extends StatelessWidget {
-  const SnakeGameWrapperApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'SnakeZone Pro',
-      home: SnakeGameScreen(),
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
     );
+  } catch (e) {
+    debugPrint("Firebase init failed: $e");
   }
+
+  runApp(const SnakeAutoApp());
 }
 
-class SnakeGameScreen extends StatefulWidget {
-  const SnakeGameScreen({super.key});
-
-  @override
-  State<SnakeGameScreen> createState() => _SnakeGameScreenState();
-}
-
-class _SnakeGameScreenState extends State<SnakeGameScreen> {
-  late final WebViewController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0xFF0E1C0E)) // Default background of our game
-      ..loadFlutterAsset('assets/snake_game.html');
-  }
+class SnakeAutoApp extends StatelessWidget {
+  const SnakeAutoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0E1C0E),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: WebViewWidget(controller: controller),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        Provider(create: (_) => AuthService()),
+        Provider(create: (_) => FirestoreService()),
+        Provider(create: (_) => AudioService()..init()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp.router(
+            title: 'Snake Auto 2D',
+            debugShowCheckedModeBanner: false,
+            themeMode: themeProvider.themeMode,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            routerConfig: AppRoutes.router,
+          );
+        },
       ),
     );
   }
