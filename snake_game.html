@@ -943,3 +943,59 @@ function playSprint(){
 
 </script>
 
+
+<!-- SnakeZone Pro Immersive Audio System -->
+
+<audio id="rainAmbience" src="audio/rain_loop.mp3" loop preload="auto"></audio>
+<audio id="forestAmbience" src="audio/forest_ambience.mp3" loop preload="auto"></audio>
+<audio id="nightAmbience" src="audio/night_crickets.mp3" loop preload="auto"></audio>
+<audio id="birdsAmbience" src="audio/birds.mp3" loop preload="auto"></audio>
+
+<audio id="moveSound" src="audio/move_tick.mp3" preload="auto"></audio>
+<audio id="eatSound" src="audio/eat_pop.mp3" preload="auto"></audio>
+<audio id="sprintSound" src="audio/sprint_wind.mp3" preload="auto"></audio>
+
+<script>
+
+function startAmbience(){
+ const rain=document.getElementById("rainAmbience");
+ const forest=document.getElementById("forestAmbience");
+ const night=document.getElementById("nightAmbience");
+ const birds=document.getElementById("birdsAmbience");
+
+ rain.volume=0.2;
+ forest.volume=0.15;
+ birds.volume=0.12;
+ night.volume=0.1;
+
+ rain.play().catch(()=>{});
+ forest.play().catch(()=>{});
+ birds.play().catch(()=>{});
+ night.play().catch(()=>{});
+}
+
+window.addEventListener("click",startAmbience,{once:true});
+
+function playMove(){
+ const s=document.getElementById("moveSound");
+ s.currentTime=0;
+ s.volume=0.1;
+ s.play().catch(()=>{});
+}
+
+function playEat(){
+ const s=document.getElementById("eatSound");
+ s.currentTime=0;
+ s.volume=0.3;
+ s.play().catch(()=>{});
+}
+
+function playSprint(){
+ const s=document.getElementById("sprintSound");
+ s.currentTime=0;
+ s.volume=0.2;
+ s.play().catch(()=>{});
+}
+
+</script>
+
